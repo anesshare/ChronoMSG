@@ -1,5 +1,6 @@
 'use client'
 import { useState,useEffect } from "react";
+import axios from "axios";
 import Sidebar from "../components/SideBar";
 const MainPage = () => {
 
@@ -8,6 +9,28 @@ const [number,setNumber] = useState<string>("")
 const [val,setVal] = useState<number>(0)
 const [startDate,setStartDate] = useState<string>("")
 const [endDate ,setEndDate] = useState<string>("")
+
+const sendData = async (e: any) => {
+    e.preventDefault();
+    if (!userData || !number || !val) {
+        alert("Molimo Vas da popunite sva obavezna polja (userData, number, val)!");
+        return; 
+    }
+
+    try {
+        const res = await axios.post('/mainPage/api', {
+            username: userData,
+            number: number,
+            val: val,
+            startDate: startDate,
+            endDate: endDate
+        });
+        
+        alert("Zaduženje je uspešno dodato!");
+    } catch (error) {
+        console.error("Greška prilikom dodavanja zaduženja:", error);
+    }
+};
 
 useEffect(() => {
     const today = new Date();
@@ -52,7 +75,7 @@ return ( <div className="min-h-screen w-full bg-zinc-50 font-sans text-zinc-900"
                 </p>
 
                 {/* Form */}
-               <form className="mt-6 w-full rounded-xl border border-zinc-200 bg-white p-4 shadow-sm sm:p-6">
+               <form onSubmit={sendData} className="mt-6 w-full rounded-xl border border-zinc-200 bg-white p-4 shadow-sm sm:p-6">
 
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
 
@@ -137,8 +160,8 @@ return ( <div className="min-h-screen w-full bg-zinc-50 font-sans text-zinc-900"
                     </button>
                 </div>
 
-            </div>
-            </form>
+                            </div>
+                            </form>
                         </section>
                     </main>
                 </div>

@@ -2,6 +2,8 @@ import { pool } from "@/app/lib/db";
 import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
+import { cookies } from 'next/headers';
+
 
 export async function POST(req: Request) {
     try {
@@ -49,4 +51,22 @@ export async function POST(req: Request) {
         console.error("Greška pri prijavljivanju:", err);
         return NextResponse.json({ success: false, error: "Greška na serveru!" }, { status: 500 });
     }
+}
+
+
+export async function GET() {
+  const cookieStore = await cookies();
+  // Zeni 'tvoj_naziv_kolacica' sa stvarnim imenom tvog kolačića (npr. 'token')
+  const token = cookieStore.get('token')?.value;
+
+  if (!token) {
+    return NextResponse.json({ error: 'Niste prijavljeni' }, { status: 401 });
+  }
+
+  try {
+    const userData = jwt.decode(token);
+    return NextResponse.json({ user: userData });
+  } catch (error) {
+    return NextResponse.json({ error: 'Neispravan token' }, { status: 400 });
+  }
 }
