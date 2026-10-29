@@ -2,5 +2,5 @@ export interface User{
     id:number
     username:string
     password:string
-    phone:string
+    number:string
 }
