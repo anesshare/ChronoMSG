@@ -9,6 +9,15 @@ import { Trash2 } from "lucide-react"
 const DataPage = () => {
     const [transData, setTransData] = useState<Transaction[]>([]);
 
+    const deleteTransaction = async (id: number) => {
+        try {
+            const res =await axios.delete(`/dataPage/api/`,{params:{id}});
+            getTransData(); // Refresh the data after deletion
+        } catch (error) {
+            console.error("Greška pri brisanju transakcije: ", error);
+        }
+    };
+
     const getTransData = async () => {
         try {
             const res = await axios.get("/dataPage/api");
@@ -35,6 +44,7 @@ const DataPage = () => {
                     <table className="w-full text-left text-sm">
                         <thead className="bg-gray-50 text-gray-600">
                             <tr>
+                                <th className="px-6 py-4 font-semibold">ID</th>
                                 <th className="px-6 py-4 font-semibold">Ime dužnika</th>
                                 <th className="px-6 py-4 font-semibold">Telefon</th>
                                 <th className="px-6 py-4 font-semibold">Iznos</th>
@@ -47,6 +57,9 @@ const DataPage = () => {
                         <tbody className="divide-y divide-gray-200">
                             {transData.map((item, index) => (
                                 <tr key={item.id || index} className="transition hover:bg-gray-50">
+                                    <td className="px-6 py-4 text-gray-700">
+                                        {item.id}
+                                    </td>
                                     <td className="px-6 py-4 font-medium text-gray-800">
                                         {item.name}
                                     </td>
@@ -68,7 +81,10 @@ const DataPage = () => {
                                         }`}>
                                             {item.active ? "Da" : "Ne"}
                                         </span>
-                                        <button className="ml-2 text-red-500 hover:text-red-700">
+                                        <button 
+                                            className="ml-2 text-red-500 hover:text-red-700"
+                                            onClick={() => deleteTransaction(item.id)}
+                                        >
                                             <Trash2 size={16} />
                                         </button>
                                     </td>
