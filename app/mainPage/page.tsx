@@ -19,14 +19,17 @@ const sendData = async (e: any) => {
 
     try {
         const res = await axios.post('/mainPage/api', {
-            username: userData,
+            name: userData,
             number: number,
-            val: val,
-            startDate: startDate,
-            endDate: endDate
+            trans_value: val,
+            start_date: startDate,
+            end_date: endDate
         });
         
         alert("Zaduženje je uspešno dodato!");
+        setUserData("")
+        setNumber("")
+        setVal(0)
     } catch (error) {
         console.error("Greška prilikom dodavanja zaduženja:", error);
     }
@@ -86,6 +89,7 @@ return ( <div className="min-h-screen w-full bg-zinc-50 font-sans text-zinc-900"
                     </label>
 
                     <input
+                        value={userData}
                         onChange={(e)=>setUserData(e.target.value)}
                         type="text"
                         placeholder="Unesite ime i prezime"
@@ -100,6 +104,7 @@ return ( <div className="min-h-screen w-full bg-zinc-50 font-sans text-zinc-900"
                     </label>
 
                     <input
+                        value={number}
                         onChange={(e)=>setNumber(e.target.value)}
                         type="tel"
                         placeholder="06x xxx xxxx"
@@ -114,6 +119,7 @@ return ( <div className="min-h-screen w-full bg-zinc-50 font-sans text-zinc-900"
                     </label>
 
                     <input
+                        value={val}
                         onChange={(e)=>setVal(Number(e.target.value))}
                         type="number"
                         min="0"
