@@ -21,6 +21,7 @@ const LoginPage = () => {
     router.push("/mainPage")
   }catch(error){
     console.log("Greska prilikom logovanja:" ,error)
+    alert("Netacni podaci za prijavu!")
   }
   }
 
