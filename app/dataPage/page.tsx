@@ -50,7 +50,7 @@ const DataPage = () => {
                                 <th className="px-6 py-4 font-semibold">Iznos</th>
                                 <th className="px-6 py-4 font-semibold">Početak</th>
                                 <th className="px-6 py-4 font-semibold">Kraj</th>
-                                <th className="px-6 py-4 font-semibold">Poruka nezavršena</th>
+                                <th className="px-6 py-4 font-semibold">Poruka poslata</th>
                             </tr>
                         </thead>
 
