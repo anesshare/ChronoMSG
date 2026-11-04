@@ -4,80 +4,161 @@ import axios from "axios";
 
 export async function GET(request: Request) {
     try {
-        // 1. Povlačenje podataka iz tabele active_trans sa tačnim kolonama
-        const resDb = await pool.query("SELECT * FROM active_trans WHERE active = true");
+        // 1. Povlačenje aktivnih zaduženja
+        const resDb = await pool.query(
+            "SELECT * FROM active_trans WHERE active = false"
+        );
+
         const rows = resDb.rows;
 
         if (!rows || rows.length === 0) {
-            return NextResponse.json({ success: true, message: "Nema aktivnih zaduženja za slanje." });
+            return NextResponse.json({
+                success: true,
+                message: "Nema aktivnih zaduženja."
+            });
         }
 
+        // 2. WhatsApp API podaci
         const token = process.env.WHATSAPP_TOKEN;
         const phone_number_id = process.env.WHATSAPP_PHONE_NUMBER_ID;
 
         if (!token || !phone_number_id) {
             return NextResponse.json(
-                { error: 'Meta API credentials nisu podešeni u .env fajlu.' },
+                {
+                    success: false,
+                    error: "Meta API credentials nisu podešeni."
+                },
                 { status: 500 }
             );
         }
 
+        // 3. Današnji datum
+        const today = new Date().toLocaleDateString("en-CA", {
+            timeZone: "Europe/Belgrade"
+        });
+
         const results = [];
 
-        // 2. Prolazak kroz svaki red i slanje poruke preko Meta API-ja
+        // 4. Prolazak kroz zaduženja
         for (const row of rows) {
-            const customerName = row.name;           // Kolona 'name'
-            const recipientPhone = row.number;       // Kolona 'number'
-            const amount = row.trans_value;          // Kolona 'trans_value'
-            const dueDate = row.end_date || row.start_date; // Možeš izabrati da li gledaš end_date ili start_date kao rok
 
-            if (!recipientPhone) continue;
+            const customerName = row.name;
+            const recipientPhone = row.number;
+            const amount = row.trans_value;
+            const dueDate = row.end_date;
+
+            // 5. Provera da li je datum dospeća danas
+            if (!dueDate) continue;
+
+            const formattedDueDate = new Date(dueDate)
+                .toLocaleDateString("en-CA", {
+                    timeZone: "Europe/Belgrade"
+                });
+
+            if (formattedDueDate !== today) {
+                continue;
+            }
+
+            if (!recipientPhone) {
+                results.push({
+                    status: "skipped",
+                    reason: "Nedostaje broj telefona."
+                });
+                continue;
+            }
+
+            // 6. Formatiranje datuma za WhatsApp
+            const formattedDate = new Date(dueDate)
+                .toLocaleDateString("sr-RS", {
+                    timeZone: "Europe/Belgrade"
+                });
 
             try {
+                // 7. Slanje WhatsApp template poruke
                 const waResponse = await axios.post(
                     `https://graph.facebook.com/v25.0/${phone_number_id}/messages`,
                     {
-                        messaging_product: 'whatsapp',
-                        to: recipientPhone,
-                        type: 'template',
+                        messaging_product: "whatsapp",
+                        to: String(recipientPhone),
+                        type: "template",
+
                         template: {
-                            name: 'napomena_za_ratu', // Tvoj odobreni šablon
-                            language: { code: 'sr' },
-                            components: [
-                                {
-                                    type: 'body',
-                                    parameters: [
-                                        { type: 'text', text: String(customerName) },
-                                        { type: 'text', text: String(dueDate) },
-                                        { type: 'text', text: String(amount) }
-                                    ]
-                                }
-                            ]
+                            name: "napomena_srb",
+                            language: {
+                                code: "sr"
+                            },
+                           components: [
+                                            {
+                                                type: "body",
+                                                parameters: [
+                                                    {
+                                                        type: "text",
+                                                        parameter_name: "customer_name",
+                                                        text: String(customerName)
+                                                    },
+                                                    {
+                                                        type: "text",
+                                                        parameter_name: "due_date",
+                                                        text: formattedDate
+                                                    },
+                                                    {
+                                                        type: "text",
+                                                        parameter_name: "amount",
+                                                        text: String(amount)
+                                                    }
+                                                ]
+                                            }
+                                        ]
                         }
                     },
                     {
                         headers: {
-                            'Authorization': `Bearer ${token}`,
-                            'Content-Type': 'application/json'
+                            Authorization: `Bearer ${token}`,
+                            "Content-Type": "application/json"
                         }
                     }
                 );
 
-                results.push({ phone: recipientPhone, status: "sent", data: waResponse.data });
+                results.push({
+                    phone: recipientPhone,
+                    status: "sent",
+                    data: waResponse.data
+                });
+
             } catch (apiError: any) {
-                console.error(`Greška pri slanju na broj ${recipientPhone}:`, apiError.response?.data || apiError.message);
-                results.push({ phone: recipientPhone, status: "failed", error: apiError.response?.data || apiError.message });
+
+                console.error(
+                    `Greška pri slanju na broj ${recipientPhone}:`,
+                    apiError.response?.data || apiError.message
+                );
+
+                results.push({
+                    phone: recipientPhone,
+                    status: "failed",
+                    error: apiError.response?.data || apiError.message
+                });
             }
         }
-
-        return NextResponse.json({ 
-            success: true, 
-            message: `Procesirano ${rows.length} zaduženja.`,
-            results 
+        const update = await pool.query("UPDATE active_trans SET active = $1",[true])
+        // 8. Rezultat
+        return NextResponse.json({
+            success: true,
+            message: `Provereno ${rows.length} zaduženja.`,
+            today,
+            results
         });
 
     } catch (error: any) {
-        console.error("Greška prilikom čitanja iz baze ili slanja poruka!", error);
-        return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+
+        console.error("Greška prilikom izvršavanja:", error);
+
+        return NextResponse.json(
+            {
+                success: false,
+                error: error.message
+            },
+            { status: 500 }
+        );
     }
 }
+
