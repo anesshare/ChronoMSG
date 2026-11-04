@@ -20,7 +20,7 @@ const RegisterPage = () => {
         number: number
       })
       alert("Uspesno uneti podaci!")
-      router.push('/login')
+      router.push('/login-comp')
       
     } catch (error: any) {
       console.error("Nesto nije uredu pri registraciji!", error.response?.data || error.message)
@@ -96,7 +96,7 @@ const RegisterPage = () => {
         <p className="text-center text-sm text-zinc-500">
           Imate nalog?{' '}
           <span className="cursor-pointer font-semibold text-violet-600 transition hover:text-violet-800">
-            <Link href="/login">Prijavite se!</Link>
+            <Link href="/login-comp">Prijavite se!</Link>
           </span>
         </p>
 
