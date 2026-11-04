@@ -86,8 +86,9 @@ const RegisterPage = () => {
         </div>
 
         <button
+          disabled
           type="submit"
-          className="mt-2 h-11 w-full rounded-lg bg-violet-600 font-semibold text-white shadow-md transition duration-200 hover:bg-violet-700 hover:shadow-lg active:scale-[0.98]"
+          className="mt-2 h-11 w-full rounded-lg bg-gray-600 font-semibold text-white shadow-md transition duration-200 hover:bg-gray-500 hover:shadow-lg active:scale-[0.98]"
         >
           POTVRDI
         </button>
