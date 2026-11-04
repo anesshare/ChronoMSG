@@ -4,6 +4,10 @@ import axios from "axios";
 
 export async function GET(request: Request) {
     try {
+        const authHeader = request.headers.get('authorization');
+            if (process.env.NODE_ENV === 'production' && authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+                return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+            }
         // 1. Povlačenje aktivnih zaduženja
         const resDb = await pool.query(
             "SELECT * FROM active_trans WHERE active = false"
@@ -139,7 +143,10 @@ export async function GET(request: Request) {
                 });
             }
         }
-        const update = await pool.query("UPDATE active_trans SET active = $1",[true])
+        const update = await pool.query(
+                "UPDATE active_trans SET active = $1 WHERE id = $2",
+                [true, rows.id] 
+            );
         // 8. Rezultat
         return NextResponse.json({
             success: true,
