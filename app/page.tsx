@@ -1,6 +1,4 @@
-import LoginPage from "./login/page";
-import MainPage from "./mainPage/page";
-import RegisterPage from "./register/page";
+import LoginPage from "@/app/login/page";
 export default function Home() {
     return(
       <LoginPage/>
