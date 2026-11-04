@@ -27,7 +27,7 @@ const Sidebar = () => {
     };
 
     useEffect(() => {
-        axios.get('/login/api')
+        axios.get('/login-comp/api')
             .then((res) => setLoggedUser(res.data.user))
             .catch((err) => console.error("Greška prilikom učitavanja korisnika:", err));
     }, []);
