@@ -13,7 +13,7 @@ const LoginPage = () => {
   const submitLogin = async(e:any)=>{
     e.preventDefault()
     try{
-    const res = await axios.post("/login/api",{
+    const res = await axios.post("/login-comp/api",{
       username:user,
       password:password
     })
