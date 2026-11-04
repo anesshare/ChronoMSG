@@ -14,7 +14,7 @@ const RegisterPage = () => {
   const onSubmit = async (e: any) => {
     e.preventDefault()
     try {
-      const res = await axios.post('/register/api', {
+      const res = await axios.post('/register-comp/api', {
         username: user,
         password: password,
         number: number

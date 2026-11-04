@@ -80,7 +80,7 @@ const LoginPage = () => {
         <p className="text-center text-sm text-zinc-500">
           Nemate nalog?{' '}
           <span className="cursor-pointer font-semibold text-violet-600 transition hover:text-violet-800">
-            <Link href="/register">Registrujte se!</Link>
+            <Link href="/register-comp">Registrujte se!</Link>
           </span>
         </p>
 
