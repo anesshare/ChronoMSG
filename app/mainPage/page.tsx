@@ -142,7 +142,7 @@ const MainPage = () => {
                                     value={startDate}
                                     onChange={(e) => setStartDate(e.target.value)}
                                     type="date"
-                                    className="h-11 w-full min-w-0 rounded-lg border border-zinc-300 bg-zinc-50 px-3 text-sm outline-none transition focus:border-violet-500 focus:bg-white focus:ring-2 focus:ring-violet-200"
+                                     className="h-11 w-full min-w-0 rounded-lg border border-zinc-300 bg-zinc-50 px-3 text-sm outline-none transition placeholder:text-zinc-400 focus:border-violet-500 focus:bg-white focus:ring-2 focus:ring-violet-200"
                                 />
                             </div>
 
@@ -155,7 +155,7 @@ const MainPage = () => {
                                     value={endDate}
                                     onChange={(e) => setEndDate(e.target.value)}
                                     type="date"
-                                    className="h-11 w-full min-w-0 rounded-lg border border-zinc-300 bg-zinc-50 px-3 text-sm outline-none transition focus:border-violet-500 focus:bg-white focus:ring-2 focus:ring-violet-200"
+                                     className="h-11 w-full min-w-0 rounded-lg border border-zinc-300 bg-zinc-50 px-3 text-sm outline-none transition placeholder:text-zinc-400 focus:border-violet-500 focus:bg-white focus:ring-2 focus:ring-violet-200"
                                 />
                             </div>
 
