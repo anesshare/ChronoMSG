@@ -1,10 +1,15 @@
+import { connection } from "next/server";
 import { pool } from "@/app/lib/db";
 import { NextResponse } from "next/server";
 import axios from "axios";
 
 export async function GET(request: Request) {
+    // Obavezno pozivanje connection() sprečava statički prerender i rešava grešku sa request.headers
+    await connection();
+
     try {
         const authHeader = request.headers.get('authorization');
+        
         if (process.env.NODE_ENV === 'production' && authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
@@ -46,7 +51,6 @@ export async function GET(request: Request) {
 
         // 4. Prolazak kroz zaduženja
         for (const row of rows) {
-
             const customerName = row.name;
             const recipientPhone = row.number;
             const amount = row.trans_value;
@@ -136,7 +140,6 @@ export async function GET(request: Request) {
                 });
 
             } catch (apiError: any) {
-
                 console.error(
                     `Greška pri slanju na broj ${recipientPhone}:`,
                     apiError.response?.data || apiError.message
@@ -159,7 +162,6 @@ export async function GET(request: Request) {
         });
 
     } catch (error: any) {
-
         console.error("Greška prilikom izvršavanja:", error);
 
         return NextResponse.json(
