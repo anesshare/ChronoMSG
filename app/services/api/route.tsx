@@ -1,4 +1,3 @@
-export const dynamic = 'force-dynamic';
 import { pool } from "@/app/lib/db";
 import { NextResponse } from "next/server";
 import axios from "axios";
