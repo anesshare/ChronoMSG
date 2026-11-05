@@ -8,11 +8,11 @@ export async function GET(request: Request) {
     await connection();
 
     try {
-        const authHeader = request.headers.get('authorization');
+        // const authHeader = request.headers.get('authorization');
         
-        if (process.env.NODE_ENV === 'production' && authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-        }
+        // if (process.env.NODE_ENV === 'production' && authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+        //     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        // }
 
         // 1. Povlačenje aktivnih zaduženja
         const resDb = await pool.query(
